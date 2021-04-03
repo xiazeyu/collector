@@ -1,0 +1,8 @@
+{
+    "missionName": "m2n过期已提交",
+    "description": "m2d过期已提交",
+    "path": "mission2Path",
+    "ext": "zip",
+    "size": 16777216,
+    "dueDate": "2011-11-01T01:01:01"
+}
