@@ -132,9 +132,9 @@ def allowed_file(filename, ALLOWED_EXTENSIONS):
 
 def fileStatus(stuNum, missionBody):
     missionPath = cwd / receivedPath / missionBody['path']
+    missionPath.mkdir(parents=True, exist_ok=True)
     ufName = f'{stuNum}-{students[stuNum]}.unconfirmed.{missionBody["ext"]}'
     cfName = f'{stuNum}-{students[stuNum]}.{missionBody["ext"]}'
-    missionPath.mkdir(parents=True, exist_ok=True)
     if ((missionPath / cfName).exists()):
         return ['已锁定', (missionPath / cfName).stat().st_size, datetime.fromtimestamp((missionPath / cfName).stat().st_mtime)]
     elif ((missionPath / ufName).exists()):
@@ -145,10 +145,17 @@ def fileStatus(stuNum, missionBody):
 
 def lockFile(stuNum, missionBody):
     missionPath = cwd / receivedPath / missionBody['path']
+    missionPath.mkdir(parents=True, exist_ok=True)
     ufName = f'{stuNum}-{students[stuNum]}.unconfirmed.{missionBody["ext"]}'
     cfName = f'{stuNum}-{students[stuNum]}.{missionBody["ext"]}'
     if ((missionPath / ufName).exists()):
         (missionPath / ufName).rename(missionPath / cfName)
+
+
+def missionFinishRate(missionBody):
+    missionPath = cwd / receivedPath / missionBody['path']
+    missionPath.mkdir(parents=True, exist_ok=True)
+    return 100 * len(list(missionPath.glob('*'))) / len(students)
 
 
 def genMissonStatus(stuNum, missionUrl, missionBody):
@@ -161,6 +168,7 @@ def genMissonStatus(stuNum, missionUrl, missionBody):
         'due': datetime.fromisoformat(missionBody['dueDate']),
         "remain": datetime.fromisoformat(missionBody['dueDate']) - datetime.today(),
         'link': missionUrl,
+        'finishrate': missionFinishRate(missionBody),
     }
     if result['status'] == '已锁定' or result['remain'].total_seconds() < 0:
         result['avaliable'] = False
@@ -178,7 +186,7 @@ def genProgress(missionStatus):
     for i in missionStatus:
         if i['submitted']:
             p += 1
-    return p / len(missionStatus)
+    return 100 * p / len(missionStatus)
 
 
 if __name__ == '__main__':
