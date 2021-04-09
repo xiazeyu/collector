@@ -1,5 +1,5 @@
 from pathlib import Path
-import json
+import json, sys, os
 from flask import Flask, render_template, make_response, request, redirect, url_for
 from datetime import datetime
 app = Flask(__name__)
@@ -10,6 +10,7 @@ dbPath = cwd / 'db'
 receivedPath = cwd / 'received'
 studentsPath = dbPath / 'students.json'
 missionsPath = dbPath / 'missions'
+sys.path.append(os.fspath(missionsPath))
 
 if studentsPath.exists():
     students = json.loads(studentsPath.read_text(encoding='UTF-8'))
@@ -17,6 +18,8 @@ else:
     students = {}
 
 missionsJson = list(missionsPath.glob('**/*.json'))
+checkersList = list(missionsPath.glob('**/*.py'))
+checkersList = [x.stem for x in checkersList]
 missionsDb = {}
 
 for mission in missionsJson:
@@ -117,11 +120,14 @@ def check(missionurl):
         resp = make_response(redirect(url_for('login', info="请先登录。")))
     else:
         if (missionStatus['submitted']):
-            resp = make_response(render_template(
-                'check.html', info='TODO'))  # TODO
+            if missionurl in checkersList:
+                plugin = __import__(missionurl)
+                checkerResult = plugin.check(missionStatus['currentFilePath'])
+                resp = make_response(f'<!DOCTYPE html><html><body>{checkerResult}</body></html>')
+            else:
+                resp = make_response('<!DOCTYPE html><html><body></body></html>')
         else:
-            resp = make_response(render_template(
-                'check.html', info='未提交呢。'))
+            resp = make_response('<!DOCTYPE html><html><body>未提交呢，请先提交。</body></html>')
     return resp
 
 
@@ -136,11 +142,11 @@ def fileStatus(stuNum, missionBody):
     ufName = f'{stuNum}-{students[stuNum]}.unconfirmed.{missionBody["ext"]}'
     cfName = f'{stuNum}-{students[stuNum]}.{missionBody["ext"]}'
     if ((missionPath / cfName).exists()):
-        return ['已锁定', (missionPath / cfName).stat().st_size, datetime.fromtimestamp((missionPath / cfName).stat().st_mtime)]
+        return ['已锁定', (missionPath / cfName).stat().st_size, datetime.fromtimestamp((missionPath / cfName).stat().st_mtime), (missionPath / cfName)]
     elif ((missionPath / ufName).exists()):
-        return ['已提交', (missionPath / ufName).stat().st_size, datetime.fromtimestamp((missionPath / ufName).stat().st_mtime)]
+        return ['已提交', (missionPath / ufName).stat().st_size, datetime.fromtimestamp((missionPath / ufName).stat().st_mtime), (missionPath / ufName)]
     else:
-        return ['未提交', 0, datetime.now()]
+        return ['未提交', 0, datetime.now(), None]
 
 
 def lockFile(stuNum, missionBody):
@@ -169,6 +175,7 @@ def genMissonStatus(stuNum, missionUrl, missionBody):
         "remain": datetime.fromisoformat(missionBody['dueDate']) - datetime.today(),
         'link': missionUrl,
         'finishrate': missionFinishRate(missionBody),
+        'currentFilePath': fs[3],
     }
     if result['status'] == '已锁定' or result['remain'].total_seconds() < 0:
         result['avaliable'] = False
