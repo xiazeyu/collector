@@ -4,7 +4,7 @@ from flask import Flask, render_template, make_response, request, redirect, url_
 from datetime import datetime
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-timeFormat = '%a %Y-%M-%d %H:%M:%S'
+timeFormat = '%a %Y-%m-%d %H:%M:%S'
 
 cwd = Path.cwd()
 dbPath = cwd / 'db'
