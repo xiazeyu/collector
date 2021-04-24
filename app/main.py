@@ -20,7 +20,6 @@ missionsDb = {}
 checkersList = []
 
 def loadDatas():
-    print('Data updated.')
     global students
     global missionsDb
     global checkersList
@@ -209,10 +208,11 @@ class EventHandler(FileSystemEventHandler):
     def on_any_event(self, event):
         loadDatas()
 
+loadDatas()
+observer = Observer()
+event_handler = EventHandler()
+observer.schedule(event_handler, dbPath.as_posix(), recursive=True)
+observer.start()
+
 if __name__ == '__main__':
-    loadDatas()
-    observer = Observer()
-    event_handler = EventHandler()
-    observer.schedule(event_handler, dbPath.as_posix(), recursive=True)
-    observer.start()
     app.run(debug=True, host='0.0.0.0')
