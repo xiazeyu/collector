@@ -6,6 +6,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+timeFormat = '%a %Y-%m-%d %H:%M:%S'
 
 cwd = Path.cwd()
 dbPath = cwd / 'db'
@@ -69,11 +70,11 @@ def missions():
         resp = make_response(redirect(url_for('login', info="请先登录。")))
     else:
         missonStatus = []
-        for key in missionsDb.keys():
+        for key in sorted(missionsDb.keys()):
             missonStatus.append(genMissonStatus(stuNum, key, missionsDb[key]))
         # print(missonStatus)
         resp = make_response(render_template(
-            'missions.html', student_name=students[stuNum], missions=missonStatus, progress=genProgress(missonStatus), nowDateTime=datetime.today()))
+            'missions.html', student_name=students[stuNum], missions=missonStatus, progress='%.2f' % genProgress(missonStatus), nowDateTime=datetime.today().strftime(timeFormat)))
     return resp
 
 
@@ -178,11 +179,11 @@ def genMissonStatus(stuNum, missionUrl, missionBody):
         'name': missionBody['missionName'],
         'status': fs[0],
         'fileSize': fs[1],
-        'subtime': fs[2],
-        'due': datetime.fromisoformat(missionBody['dueDate']),
+        'subtime': fs[2].strftime(timeFormat),
+        'due': datetime.fromisoformat(missionBody['dueDate']).strftime(timeFormat),
         "remain": datetime.fromisoformat(missionBody['dueDate']) - datetime.today(),
         'link': missionUrl,
-        'finishrate': missionFinishRate(missionBody),
+        'finishrate': '%.2f' % missionFinishRate(missionBody),
         'currentFilePath': fs[3],
     }
     if result['status'] == '已锁定' or result['remain'].total_seconds() < 0:
