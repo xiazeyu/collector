@@ -2,6 +2,8 @@ from pathlib import Path
 import json, sys, os
 from flask import Flask, render_template, make_response, request, redirect, url_for
 from datetime import datetime
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
@@ -12,20 +14,26 @@ studentsPath = dbPath / 'students.json'
 missionsPath = dbPath / 'missions'
 sys.path.append(os.fspath(missionsPath))
 
-if studentsPath.exists():
-    students = json.loads(studentsPath.read_text(encoding='UTF-8'))
-else:
-    students = {}
-
-missionsJson = list(missionsPath.glob('**/*.json'))
-checkersList = list(missionsPath.glob('**/*.py'))
-checkersList = [x.stem for x in checkersList]
+students = {}
 missionsDb = {}
+checkersList = []
 
-for mission in missionsJson:
-    missionsDb[mission.stem] = json.loads(
-        mission.read_text(encoding='UTF-8'))
+def loadDatas():
+    print('Data updated.')
+    global students
+    global missionsDb
+    global checkersList
+    missionsDb = {}
+    if studentsPath.exists():
+        students = json.loads(studentsPath.read_text(encoding='UTF-8'))
 
+    missionsJson = list(missionsPath.glob('**/*.json'))
+    checkersList = list(missionsPath.glob('**/*.py'))
+    checkersList = [x.stem for x in checkersList]
+
+    for mission in missionsJson:
+        missionsDb[mission.stem] = json.loads(
+            mission.read_text(encoding='UTF-8'))
 
 @app.route('/')
 @app.route('/login')
@@ -196,5 +204,14 @@ def genProgress(missionStatus):
     return 100 * p / len(missionStatus)
 
 
+class EventHandler(FileSystemEventHandler):
+    def on_any_event(self, event):
+        loadDatas()
+
 if __name__ == '__main__':
+    loadDatas()
+    observer = Observer()
+    event_handler = EventHandler()
+    observer.schedule(event_handler, dbPath.as_posix(), recursive=True)
+    observer.start()
     app.run(debug=True, host='0.0.0.0')
