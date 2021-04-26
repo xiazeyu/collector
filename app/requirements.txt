@@ -1,1 +1,3 @@
 watchdog
+python-multipart
+jinja2

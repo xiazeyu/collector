@@ -106,3 +106,5 @@ dist
 # datas
 app/db/
 app/received/
+
+*/__pycache__

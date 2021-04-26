@@ -1,8 +1,8 @@
 {
-    "missionName": "m6n未过期已锁定",
+    "name": "m6n未过期已锁定",
     "description": "m6d未过期已锁定",
-    "path": "mission6Path",
+    "subpath": "mission6Path",
     "ext": "zip",
     "size": 16777216,
-    "dueDate": "2044-04-04T04:44:44"
+    "deadline": "2044-04-04T04:44:44"
 }

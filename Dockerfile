@@ -1,4 +1,4 @@
-FROM tiangolo/meinheld-gunicorn-flask
+FROM tiangolo/uvicorn-gunicorn-fastapi
 
 COPY ./app /app
 

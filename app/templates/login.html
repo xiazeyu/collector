@@ -1,1 +1,32 @@
-<!DOCTYPE html><html><body><form action="/login" method="get">学号: <input type="text" name="stuNum" /><input type="submit" />{% if info != ""%}<br>{{ info }}{% endif %}</form></body></html>
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>登录 - Collector by xiaze</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+        integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.3/examples/signin/signin.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <form class="form-signin" action="/login" method="get">
+            <h2 class="form-signin-heading">请登录</h2><label for="stu_id" class="sr-only">学号</label><input type="text"
+                id="stu_id" name="stu_id" class="form-control" placeholder="学号" required autofocus><br><button
+                class="btn btn-lg btn-primary btn-block" type="submit">登录</button> {% if info %} <div
+                class="alert alert-info" role="alert">{{ info }} </div>{% endif %}
+        </form>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"
+    integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
+    crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+    integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
