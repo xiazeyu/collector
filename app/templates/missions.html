@@ -1,1 +1,24 @@
-<!DOCTYPE html><html><body>欢迎您, 尊贵的{{ student_name }}。<br><table border="1"><tr><th>作业名称</th><th>当前状态</th><th>截止日期</th><th>剩余时间</th><th>🐎👆提交</th><th>总完成率</th></tr>{% for item in missions %}<tr><td>{{ item.name }}</td><td>{% if item.submitted %}{{ item.status }}(于{{ item.subtime }}, {{ item.fileSize }}字节){% else%}{{item.status }}{% endif %}</td><td>{{ item.due }}</td><td>{{ item.remain }}</td><td><a href="/submit/{{ item.link }}">{% if not item.avaliable %}不用交了 好耶!{% else %}点我提交!</a>{% endif %}</td><td>{{ item.finishrate }}%</td></tr>{% endfor %}</table>当前时间: {{ nowDateTime }}<br>当前总进度: {{ progress }}%。<br><a href="/logout">登出</a></body></html>
+<!DOCTYPE html>
+<html>
+
+<body>欢迎您, 尊贵的{{ student.name }}。<br>
+    <table border="1">
+        <tr>
+            <th>作业名称</th>
+            <th>当前状态</th>
+            <th>截止日期</th>
+            <th>剩余时间</th>
+            <th>🐴↑提交</th>
+            <th>总完成率</th>
+        </tr>{% for item in missions_status %}<tr>
+            <td>{{ item.mission.name }}</td>
+            <td>{{ item.status.value }}{% if item.submitted %}(于{{ item.sub_time }}, {{ item.sub_size }}){% endif %}</td>
+            <td>{{ item.mission.deadline }}</td>
+            <td>{{ item.remain }}</td>
+            <td><a href="/submit/{{ item.mission.mission_url }}">{% if not item.avaliable %}不用交了 好耶!{% else %}点我提交!</a>{% endif %}</td>
+            <td>{{ item.finish_rate | round(2) }}%</td>
+        </tr>{% endfor %}
+    </table>当前时间: {{ now }}<br>当前总进度: {{ progress | round(2) }}%。<br><a href="/logout">登出</a>
+</body>
+
+</html>

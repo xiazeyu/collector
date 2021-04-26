@@ -9,6 +9,7 @@ RECEIVED_SUBPATH: str = 'received'
 STUDENTS_SUBPATH: str = 'students.json'
 MISSION_SUBPATH: str = 'missions'
 
+DATETIME_FORMAT = '%a %Y-%m-%d %H:%M:%S'
 
 # Below are auto-computed
 # You should not change

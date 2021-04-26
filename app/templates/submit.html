@@ -1,1 +1,35 @@
-<!DOCTYPE html><html><body>{% if info != "" %}{{ info }}<br>{% endif %}您好: {{ stuname }}, 您正在提交的是 {{ missionStatus.name }}。<br>{{missionObj.description }}<br>当前状态: {{ missionStatus.status }}。<br>截止时间: {{ missionStatus.due }}。 剩余时间: {{missionStatus.remain }}。<br>{% if missionStatus.submitted %}您已提交过了一个文件。<br>文件大小为{{ missionStatus.fileSize}}字节。<br>提交时间为{{ missionStatus.subtime }}。<br>{% endif %}{% if missionStatus.avaliable %}<br>您仅可提交{{ missionObj.ext}}。文件大小最大为{{ missionObj.size }}字节。<br><form action="/submit/{{ missionStatus.link }}" method="post" enctype="multipart/form-data">选择文件: <input type="file"name="file" accept=".{{ missionObj.ext }}" /><input type="submit" /><br>{%if missionStatus.status == '已提交'%}<a href="/lock/{{ missionStatus.link }}">点我锁定文件</a><br>警告: 锁定文件后您将无法再次提交。逾期后文件未锁定的文件将自动锁定，所以无需担心。<br>{% endif%}{% else %}当前任务已不可提交。<br>{% endif %}<a href="/missions">返回</a><br>{% if missionStatus.submitted %}<iframe width="100%" height="1080px" name="check" src="/check/{{ missionStatus.link }}"></iframe>{% endif %}</body></html>
+<!DOCTYPE html>
+<html>
+
+<body>
+    {% if info %}{{ info }}<br>{% endif %}
+    您好: {{ mission_status.student.name }}, 您正在提交的是 {{ mission_status.mission.name }}。<br>
+    {% if mission_status.mission.description %}{{ mission_status.mission.description }}<br>{% endif %}
+    当前状态: {{ mission_status.status.value }}。<br>
+    截止时间: {{ mission_status.mission.deadline }}。
+    剩余时间: {{ mission_status.remain }}。<br>
+    {% if mission_status.submitted %}您已提交过了一个文件。<br>
+        文件大小为{{ mission_status.sub_size }}。<br>
+        提交时间为{{ mission_status.sub_time }}。<br>
+    {% endif %}
+    {% if mission_status.avaliable %}<br>
+        您仅可提交{{ mission_status.mission.ext }}。
+        文件大小最大为{{ mission_status.mission.size }}。<br>
+        <form action="/submit/{{ mission_status.mission.mission_url }}" method="post" enctype="multipart/form-data">
+            选择文件: <input type="file" name="file" accept=".{{ mission_status.mission.ext }}" />
+            <input type="submit" /><br>
+            {% if mission_status.status.value == '已提交' %}
+                <a href="/lock/{{ mission_status.mission.mission_url }}">点我锁定文件</a><br>
+                警告: 锁定文件后您将无法再次提交。逾期后文件未锁定的文件将自动锁定，所以无需担心。<br>
+            {% endif %}
+    {% else %}
+            当前任务已不可提交。<br>
+    {% endif %}
+    <a href="/submit">返回</a><br>
+    {% if mission_status.submitted %}
+        <iframe width="100%" height="1080px" name="check" src="/check/{{ mission_status.mission.mission_url }}"></iframe>
+    {% endif %}
+
+</body>
+
+</html>

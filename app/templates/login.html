@@ -1,1 +1,6 @@
-<!DOCTYPE html><html><body><form action="/login" method="get">学号: <input type="text" name="stuNum" /><input type="submit" />{% if info != ""%}<br>{{ info }}{% endif %}</form></body></html>
+<!DOCTYPE html>
+<html>
+
+<body>
+<form action="/login" method="get">学号: <input type="text" name="stu_id" /><input type="submit" /></form>{% if info %}{{ info }}{% endif %}</body>
+</html>

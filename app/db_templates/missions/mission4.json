@@ -1,8 +1,8 @@
 {
-    "missionName": "m4n未过期未提交",
+    "name": "m4n未过期未提交",
     "description": "m4d未过期未提交",
-    "path": "mission4Path",
+    "subpath": "mission4Path",
     "ext": "zip",
     "size": 16777216,
-    "dueDate": "2044-04-04T04:44:44"
+    "deadline": "2044-04-04 04:44:44"
 }

@@ -2,8 +2,11 @@
 
 import zipfile
 
-def check(filePath):
-    file = zipfile.ZipFile(filePath)
+def main(filePath):
+    try:
+        file = zipfile.ZipFile(filePath)
+    except zipfile.BadZipFile:
+        return '压缩包已损坏，请重新打包上传。<br>'
     output = ''
 
     output += testZip(file)
@@ -23,7 +26,7 @@ def listZip(obj):
     body = ''
     for f in nameList:
         i = obj.getinfo(f)
-        print(i)
+        # print(i)
         body += f'<tr><td>{i.filename}</td><td>{i.date_time}</td><td>{i.file_size}</td><td>{i.compress_size}</td><td>{i.CRC}</td></tr>'
     foot = '</table>'
     return head + body + foot
