@@ -50,10 +50,10 @@
             <div class="panel-body">{% if mission_status.avaliable %}<p>您仅可提交{{ mission_status.mission.ext }}文件。</p>
                 <p>文件大小最大为{{ mission_status.mission.size.human_readable() }}。</p>
                 <form action="/submit/{{ mission_status.mission.mission_url }}" method="post"
-                    enctype="multipart/form-data"></form>
-                <p>选择文件: <input type="file" name="file" accept=".{{ mission_status.mission.ext }}" /></p><button
-                    class="btn btn-lg btn-primary btn-block" type="submit">提交</button>{% else %}<p>当前任务已不可提交。</p>{%
-                endif %}
+                    enctype="multipart/form-data">
+                    <p>选择文件: <input type="file" name="file" accept=".{{ mission_status.mission.ext }}" /></p><button
+                        class="btn btn-lg btn-primary btn-block" type="submit">提交</button>
+                </form>{% else %}<p>当前任务已不可提交。</p>{% endif %}
             </div>
         </div>{% if mission_status.status.value == '已提交' %}<div class="panel panel-default">
             <div class="panel-heading">
