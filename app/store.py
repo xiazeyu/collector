@@ -43,7 +43,8 @@ class StatusEnum(str, Enum):
 
 MissionStatus = ForwardRef('MissionStatus')
 
-class MissionStatus(BaseModel):
+
+class MissionStatus(BaseModel):  # pylint: disable=too-many-instance-attributes
     """
     The class defines a mission status.
     """
@@ -86,6 +87,7 @@ class MissionStatus(BaseModel):
 
 
 MissionStatus.update_forward_refs()
+
 
 class Store(BaseModel):
     """
@@ -184,25 +186,24 @@ async def file_status(stu: Student,
     """
     mission_path = config.received_path / mission.subpath
     mission_path.mkdir(parents=True, exist_ok=True)
-    unconfirmed_filepath = f'{stu.stu_id}-{stu.name}.unconfirmed.{mission.ext}'
-    confirmed_filepath = f'{stu.stu_id}-{stu.name}.{mission.ext}'
-    if (mission_path / confirmed_filepath).exists():
+    unconfirmed_filepath = mission_path / \
+        f'{stu.stu_id}-{stu.name}.unconfirmed.{mission.ext}'
+    confirmed_filepath = mission_path / \
+        f'{stu.stu_id}-{stu.name}.{mission.ext}'
+    if confirmed_filepath.exists():
         return (StatusEnum.LOCKED,
-                mission_path / confirmed_filepath,
-                (mission_path / confirmed_filepath).stat().st_size,
-                datetime.fromtimestamp((mission_path /
-                                        confirmed_filepath).stat().st_mtime))
-    elif (mission_path / unconfirmed_filepath).exists():
+                confirmed_filepath,
+                confirmed_filepath.stat().st_size,
+                datetime.fromtimestamp(confirmed_filepath.stat().st_mtime))
+    if unconfirmed_filepath.exists():
         return (StatusEnum.UPLOADED,
-                mission_path / unconfirmed_filepath,
-                (mission_path / unconfirmed_filepath).stat().st_size,
-                datetime.fromtimestamp((mission_path /
-                                       unconfirmed_filepath).stat().st_mtime))
-    else:
-        return (StatusEnum.EMPTY,
-                None,
-                None,
-                None)
+                unconfirmed_filepath,
+                unconfirmed_filepath.stat().st_size,
+                datetime.fromtimestamp(unconfirmed_filepath.stat().st_mtime))
+    return (StatusEnum.EMPTY,
+            None,
+            None,
+            None)
 
 
 async def mission_finish_rate(mission: Mission, stu_count: int) -> float:

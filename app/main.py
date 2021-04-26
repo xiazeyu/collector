@@ -88,11 +88,10 @@ def invalid_response(valid_logon: Optional[bool] = Depends(check_stu_id)) -> Opt
     """
     if valid_logon:
         return None
-    else:
-        response = RedirectResponse('/', status_code=status.HTTP_303_SEE_OTHER)
-        response.set_cookie(
-            key='info', value=encode_cookies('请先登录。'))
-        return response
+    response = RedirectResponse('/', status_code=status.HTTP_303_SEE_OTHER)
+    response.set_cookie(
+        key='info', value=encode_cookies('请先登录。'))
+    return response
 
 
 def get_stu_obj(stu_id: Optional[str] = Depends(get_stu_id)) -> Student:
@@ -299,19 +298,19 @@ async def submit_handler(mission_url: str,
 
     try:
         mission_path = config.received_path / mission_status.mission.subpath
-        ucfp = f'{stu_obj.stu_id}-{stu_obj.name}.unconfirmed.{ext}'
+        ucfp = mission_path / f'{stu_obj.stu_id}-{stu_obj.name}.unconfirmed.{ext}'
 
         up_stream = await file.read(mission_status.mission.size)
-        with open(mission_path / ucfp, "wb") as target:
+        with open(ucfp, "wb") as target:
             target.write(up_stream)
         target.close()
     except:  # pylint: disable=bare-except
         response.set_cookie(
-            key='info', value=encode_cookies(f'上传失败，请联系管理员。'))
+            key='info', value=encode_cookies('上传失败，请联系管理员。'))
         return response
 
     response.set_cookie(
-        key='info', value=encode_cookies(f'上传成功。'))
+        key='info', value=encode_cookies('上传成功。'))
 
     return response
 
@@ -346,10 +345,10 @@ async def lock(mission_url: str,
 
     if mission_status.status == StatusEnum.UPLOADED:
         mission_path = config.received_path / mission_status.mission.subpath
-        ucfp = f'{stu_obj.stu_id}-{stu_obj.name}.unconfirmed.{ext}'
-        ccfp = f'{stu_obj.stu_id}-{stu_obj.name}.{ext}'
-        if ((mission_path / ucfp).exists()):
-            (mission_path / ucfp).rename(mission_path / ccfp)
+        ucfp = mission_path / f'{stu_obj.stu_id}-{stu_obj.name}.unconfirmed.{ext}'
+        ccfp = mission_path / f'{stu_obj.stu_id}-{stu_obj.name}.{ext}'
+        if ucfp.exists():
+            ucfp.rename(mission_path / ccfp)
         response.set_cookie(
             key='info', value=encode_cookies('锁定成功。'))
 
@@ -381,6 +380,7 @@ async def check(mission_url: str,
                                          stu_count=len(store.students)).fetch()
 
     if mission_status.submitted and mission_url in store.checkers:
-        response = HTMLResponse(content=store.checkers[mission_url](mission_status.sub_file_path))
+        response = HTMLResponse(
+            content=store.checkers[mission_url](mission_status.sub_file_path))
         return response
     return None
