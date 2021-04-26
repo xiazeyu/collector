@@ -234,6 +234,7 @@ async def submit_detailed(request: Request,
     response = templates.TemplateResponse(
         "submit.html", {'request': request,
                         'info': decode_cookies(info),
+                        'now': datetime.today(),
                         'mission_status': mission_status})
     if info:
         response.delete_cookie(key='info')
