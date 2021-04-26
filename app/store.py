@@ -95,7 +95,7 @@ class Store(BaseModel):
     """
     students: Dict[str, str]
     missions: Dict[str, Mission]
-    checkers: Dict[str, Callable[[Path], str]]
+    checkers: Dict[str, Callable]
     observer: Any
 
     def __init__(self):
