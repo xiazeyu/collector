@@ -9,12 +9,12 @@
     截止时间: {{ mission_status.mission.deadline }}。
     剩余时间: {{ mission_status.remain }}。<br>
     {% if mission_status.submitted %}您已提交过了一个文件。<br>
-        文件大小为{{ mission_status.sub_size }}。<br>
+        文件大小为{{ mission_status.sub_size.human_readable() }}。<br>
         提交时间为{{ mission_status.sub_time }}。<br>
     {% endif %}
     {% if mission_status.avaliable %}<br>
         您仅可提交{{ mission_status.mission.ext }}。
-        文件大小最大为{{ mission_status.mission.size }}。<br>
+        文件大小最大为{{ mission_status.mission.size.human_readable() }}。<br>
         <form action="/submit/{{ mission_status.mission.mission_url }}" method="post" enctype="multipart/form-data">
             选择文件: <input type="file" name="file" accept=".{{ mission_status.mission.ext }}" />
             <input type="submit" /><br>

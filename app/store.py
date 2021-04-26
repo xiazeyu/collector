@@ -193,12 +193,12 @@ async def file_status(stu: Student,
     if confirmed_filepath.exists():
         return (StatusEnum.LOCKED,
                 confirmed_filepath,
-                confirmed_filepath.stat().st_size,
+                ByteSize(confirmed_filepath.stat().st_size),
                 datetime.fromtimestamp(confirmed_filepath.stat().st_mtime))
     if unconfirmed_filepath.exists():
         return (StatusEnum.UPLOADED,
                 unconfirmed_filepath,
-                unconfirmed_filepath.stat().st_size,
+                ByteSize(unconfirmed_filepath.stat().st_size),
                 datetime.fromtimestamp(unconfirmed_filepath.stat().st_mtime))
     return (StatusEnum.EMPTY,
             None,

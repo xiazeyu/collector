@@ -12,7 +12,7 @@
             <th>总完成率</th>
         </tr>{% for item in missions_status %}<tr>
             <td>{{ item.mission.name }}</td>
-            <td>{{ item.status.value }}{% if item.submitted %}(于{{ item.sub_time }}, {{ item.sub_size }}){% endif %}</td>
+            <td>{{ item.status.value }}{% if item.submitted %}(于{{ item.sub_time }}, {{ item.sub_size.human_readable() }}){% endif %}</td>
             <td>{{ item.mission.deadline }}</td>
             <td>{{ item.remain }}</td>
             <td><a href="/submit/{{ item.mission.mission_url }}">{% if not item.avaliable %}不用交了 好耶!{% else %}点我提交!</a>{% endif %}</td>

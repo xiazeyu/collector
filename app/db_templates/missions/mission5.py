@@ -1,32 +1,89 @@
-# zip file, list dir, verify
-
 import zipfile
+from pathlib import Path
+from datetime import datetime
+from pydantic import BaseModel, ByteSize
 
-def main(filePath):
+
+class FileInfo(BaseModel):
+    """
+    This class defines infos of a file
+    """
+    filename: str
+    date_time: datetime
+    file_size: ByteSize
+    compress_size: ByteSize
+    CRC: int
+
+
+def main(file_path: Path) -> str:
+    """
+    Verify, list files in a zip file.
+
+    Args:
+        file_path: file path
+
+    Returns:
+        str: HTML output
+    """
     try:
-        file = zipfile.ZipFile(filePath)
+        file = zipfile.ZipFile(file_path)
     except zipfile.BadZipFile:
         return '压缩包已损坏，请重新打包上传。<br>'
-    output = ''
-
-    output += testZip(file)
-    output += listZip(file)
+    output = test_zip(file)
+    output += list_zip(file)
     return output
 
-def testZip(obj):
-    result = obj.testzip()
-    if result is None:
-        return '压缩包文件完好。<br>'
-    else:
-        return '压缩包已损坏，请重新打包上传。<br>'
 
-def listZip(obj):
-    nameList = obj.namelist()
-    head = '<table border="1"><tr><th>文件名称</th><th>修改的时间日期</th><th>未压缩文件的大小</th><th>已压缩数据的大小</th><th>未压缩文件的 CRC-32</th></tr>'
+def test_zip(obj: zipfile.ZipFile):
+    """
+    Test a zip file.
+
+    Args:
+        obj: a ZipFile object
+
+    Returns:
+        str: HTML output
+    """
+    result = obj.testzip()
+    if result:
+        return '压缩包已损坏，请重新打包上传。<br>'
+    return '压缩包文件完好。<br>'
+
+
+def list_zip(obj):
+    """
+    List files in a zip file.
+
+    Args:
+        obj: a ZipFile object
+
+    Returns:
+        str: HTML output
+    """
+
+    head = '''<table border="1"><tr>
+    <th>文件名称</th>
+    <th>修改的时间日期</th>
+    <th>未压缩文件的大小</th>
+    <th>已压缩数据的大小</th>
+    <th>未压缩文件的 CRC-32</th>
+    </tr>'''
+
     body = ''
-    for f in nameList:
-        i = obj.getinfo(f)
-        # print(i)
-        body += f'<tr><td>{i.filename}</td><td>{i.date_time}</td><td>{i.file_size}</td><td>{i.compress_size}</td><td>{i.CRC}</td></tr>'
+    for info_obj in obj.infolist():
+        fileinfo = FileInfo(filename=info_obj.filename,
+                            date_time=datetime(*info_obj.date_time),
+                            file_size=info_obj.file_size,
+                            compress_size=info_obj.compress_size,
+                            CRC=info_obj.CRC,
+        )
+        body += f'''<tr>
+        <td>{fileinfo.filename}</td>
+        <td>{fileinfo.date_time}</td>
+        <td>{fileinfo.file_size.human_readable()}</td>
+        <td>{fileinfo.compress_size.human_readable()}</td>
+        <td>{fileinfo.CRC}</td>
+        </tr>'''
+
     foot = '</table>'
     return head + body + foot
