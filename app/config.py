@@ -1,6 +1,6 @@
 from pathlib import Path
 
-DEBUG_FLAG: bool = True
+DEBUG_FLAG: bool = False
 
 
 ROOT_PATH: Path = Path.cwd()

@@ -1,3 +1,4 @@
-watchdog
-python-multipart
+aiofiles
 jinja2
+python-multipart
+watchdog
