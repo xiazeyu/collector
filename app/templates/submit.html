@@ -3,80 +3,144 @@
 
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>提交 - Collector by xiaze</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
-        integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.3/dist/css/bootstrap-theme.min.css"
-        rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.3/examples/theme/theme.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/static/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon-180x180.png">
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        .bi {
+            vertical-align: -.125em;
+            fill: currentColor;
+        }
+    </style>
 </head>
 
-<body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header"><a class="navbar-brand" href="#">Collector</a></div>
-            <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a href="/submit">任务</a></li>
-                    <li class="active"><a href="/submit/{{ mission_status.mission.mission_url }}">提交</a></li>
-                    <li><a href="/logout">退出</a></li>
-                </ul>
+<body class="d-flex flex-column h-100">
+
+    <div class="container">
+        <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+
+                <img class="bi me-2" src="/static/logo.png" width="40" height="40">
+                <span class="fs-4">Collector</span>
+            </a>
+
+            <ul class="nav nav-pills">
+                <li class="nav-item"><a href="/submit" class="nav-link">任务</a></li>
+                <li class="nav-item"><a href="/submit/{{ mission_status.mission.mission_url }}"
+                        class="nav-link active">提交</a></li>
+                <li class="nav-item"><a href="/logout" class="nav-link">退出</a></li>
+            </ul>
+        </header>
+        {% if info %}
+        <div class="alert alert-primary d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path
+                    d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+            </svg>
+            <div>
+                {{ info }}
             </div>
         </div>
-    </nav>
-    <div class="container">{% if info %}<div class="alert alert-info" role="alert">{{ info }}</div>{% endif %}<div
-            class="jumbotron">
-            <h1>您好，{{ mission_status.student.name }}。</h1>
-            <h2>您正在提交的是 {{ mission_status.mission.name }}。</h2>
-            <h2>当前状态: {% if mission_status.status.value == '已锁定' %}<span class="label label-success">{% endif %}{% if
-                    mission_status.status.value == '已提交' %}<span class="label label-info">{% endif %}{% if
-                        mission_status.status.value == '未提交' %}<span class="label label-danger">{% endif %}{{
-                            mission_status.status.value }}</span>。</h2>
-            <p>当前时间: {{ now }}。</p>
-            <p>截止时间: {{ mission_status.mission.deadline }}。</p>
-            <p>剩余时间: {{ mission_status.remain }}。</p>
-        </div>{% if mission_status.mission.description %}<div class="well">
-            <p>{{ mission_status.mission.description }}</p>
-        </div>{% endif %}{% if mission_status.submitted %}<div class="well">
-            <p>您已提交过了一个文件。</p>
-            <p>文件大小为{{ mission_status.sub_size.human_readable() }}。</p>
-            <p>提交时间为{{ mission_status.sub_time }}。</p>
-        </div>{% endif %}<div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">提交文件</h3>
+        {% endif %}
+        <main class="flex-shrink-0">
+            <div class="p-5 mb-4 bg-light rounded-3">
+                <div class="container-fluid py-5">
+                    <h1 class="display-5 fw-bold">您好，{{ mission_status.student.name }}。</h1>
+                    <h1 class="display-5">您正在提交的是 {{ mission_status.mission.name }}。</h1>
+                    <h2>当前状态: {% if mission_status.status.value == '已锁定' %}<span class="label label-success">{% endif
+                            %}{%
+                            if
+                            mission_status.status.value == '已提交' %}<span class="label label-info">{% endif %}{% if
+                                mission_status.status.value == '未提交' %}<span class="label label-danger">{% endif %}{{
+                                    mission_status.status.value }}</span>。</h2>
+                    <p class="col-md-8 fs-4">当前时间: {{ now }}。</p>
+                    <p class="col-md-8 fs-4">截止时间: {{ mission_status.mission.deadline }}。</p>
+                    <p class="col-md-8 fs-4">剩余时间: {{ mission_status.remain }}。</p>
+                </div>
             </div>
-            <div class="panel-body">{% if mission_status.avaliable %}<p>您仅可提交{{ mission_status.mission.ext }}文件。</p>
-                <p>文件大小最大为{{ mission_status.mission.size.human_readable() }}。</p>
-                <form action="/submit/{{ mission_status.mission.mission_url }}" method="post"
-                    enctype="multipart/form-data">
-                    <p>选择文件: <input type="file" name="file" accept=".{{ mission_status.mission.ext }}" /></p><button
-                        class="btn btn-lg btn-primary btn-block" type="submit">提交</button>
-                </form>{% else %}<p>当前任务已不可提交。</p>{% endif %}
+
+            {% if mission_status.mission.description %}
+            <div class="p-5 mb-4 bg-light rounded-3">
+                <div class="container-fluid py-5">
+                    <p class="col-md-8 fs-4">{{ mission_status.mission.description }}</p>
+                </div>
             </div>
-        </div>{% if mission_status.status.value == '已提交' %}<div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">锁定文件</h3>
+            {% endif %}
+
+            {% if mission_status.submitted %}
+            <div class="p-5 mb-4 bg-light rounded-3">
+                <div class="container-fluid py-5">
+                    <p class="col-md-8 fs-4">{{ mission_status.mission.description }}</p>
+                    <p class="col-md-8 fs-4">您已提交过了一个文件。</p>
+                    <p class="col-md-8 fs-4">文件大小为{{ mission_status.sub_size.human_readable() }}。</p>
+                    <p class="col-md-8 fs-4">提交时间为{{ mission_status.sub_time }}。</p>
+                </div>
             </div>
-            <div class="panel-body"><a href="/lock/{{ mission_status.mission.mission_url }}"><button type="button"
-                        class="btn btn-lg btn-danger">点我锁定文件</button></a>
-                <p>警告: 锁定文件后您将无法再次提交。逾期后文件未锁定的文件将自动锁定，所以无需担心。</p>
+            {% endif %}
+
+            <div class="p-5 mb-4 bg-light rounded-3">
+                {% if mission_status.avaliable %}
+                <div class="container-fluid py-5">
+                    提交文件
+                    <p class="col-md-8 fs-4">您仅可提交{{ mission_status.mission.ext }}文件。</p>
+                    <p class="col-md-8 fs-4">文件大小最大为{{ mission_status.mission.size.human_readable() }}。</p>
+                    <form action="/submit/{{ mission_status.mission.mission_url }}" method="post"
+                        enctype="multipart/form-data">
+                        <p>选择文件: <input type="file" name="file" accept=".{{ mission_status.mission.ext }}" /></p><button
+                            class="btn btn-lg btn-primary btn-block" type="submit">提交</button>
+                    </form>
+                </div>
+                {% else %}
+                <div class="container-fluid py-5">
+                    <p class="col-md-8 fs-4">当前任务已不可提交。</p>
+                </div>
+                {% endif %}
             </div>
-        </div>{% endif %}{% if mission_status.submitted %}<div class="panel panel-default">
-            <div class="panel-heading">
+
+            {% if mission_status.status.value == '已提交' %}
+            <div class="p-5 mb-4 bg-light rounded-3">
+                <div class="container-fluid py-5">
+                    <h3 class="panel-title">锁定文件</h3>
+                    <a href="/lock/{{ mission_status.mission.mission_url }}"><button type="button"
+                            class="btn btn-lg btn-danger">点我锁定文件</button></a>
+                    <p>警告: 锁定文件后您将无法再次提交。逾期后文件未锁定的文件将自动锁定，所以无需担心。</p>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if mission_status.submitted %}
+            <div class="p-5 mb-4 bg-light rounded-3">
                 <h3 class="panel-title">校验信息</h3>
+                <iframe width="100%" height="1080px" name="check"
+                    src="/check/{{ mission_status.mission.mission_url }}"></iframe>
             </div>
-            <div class="panel-body"><iframe width="100%" height="1080px" name="check"
-                    src="/check/{{ mission_status.mission.mission_url }}"></iframe></div>
-        </div>{% endif %}</div>
-</body>
-<script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"
-    integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
-    crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
-    integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
-    crossorigin="anonymous"></script>
+            {% endif %}
+
+        </main>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js"></script>
 </body>
 
 </html>
