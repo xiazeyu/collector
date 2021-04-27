@@ -25,12 +25,7 @@
             }
         }
 
-        .bi {
-            vertical-align: -.125em;
-            fill: currentColor;
-        }
-
-        .b-example-divider {
+        .b-divider {
             height: 3rem;
             background-color: rgba(0, 0, 0, .1);
             border: solid rgba(0, 0, 0, .15);
@@ -45,8 +40,8 @@
 
         <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
             <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
-                <img class="bi me-2" src="/static/logo.png" width="40" height="40">
-                <span class="fs-4">Collector&nbsp;&nbsp;&nbsp;</span>
+                <img class="me-2" src="/static/logo.png" width="40" height="40">
+                <span class="fs-3">Collector&nbsp;&nbsp;&nbsp;</span>
             </a>
             <ul class="nav nav-pills nav-fill">
                 <li class="nav-item"><a href="/submit" class="nav-link active">任务</a></li>
@@ -54,21 +49,17 @@
             </ul>
         </header>
 
-        <div class="p-5 mb-4 bg-light rounded-3">
-            <div class="container-fluid py-4">
+        <div class="p-5 bg-light rounded-3">
+            <div class="container py-4">
                 <h1 class="display-5 fw-bold">欢迎您, 尊贵的{{ student.name }}。</h1>
                 <p class="col-md-8 fs-4">当前时间: {{ now }}。</p>
                 <p class="col-md-8 fs-4">当前总进度: {{ progress | round(2) }}%。</p>
             </div>
         </div>
 
-    </div>
-
-    <main class="flex-shrink-0">
-
-        <div class="b-example-divider"></div>
-        <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
-            <table class="table table-hover">
+        <div class="b-divider"></div>
+        <div class="p-5 mb-4 bg-light rounded-3 table-responsive">
+            <table class="table table-hover table-bordered align-middle text-nowrap">
                 <thead>
                     <tr>
                         <th scope="col">作业名称</th>
@@ -82,18 +73,21 @@
                 <tbody>{% for item in missions_status %}
                     {% if item.status.value == '已锁定' %}
                     <tr class="table-success">
-                        {% endif %}{% if item.status.value == '已提交' %}
-                    <tr class="table-info">
                         {% endif %}{% if item.status.value == '未提交' %}
                     <tr>
                         {% endif %}
                         <td scope="row">{{ item.mission.name }}</td>
-                        <td>{% if item.status.value == '已锁定' %}<span class="label label-success">
-                                {% endif %}{% if item.status.value == '已提交' %}<span class="label label-info">
-                                    {% endif %}{% if item.status.value == '未提交' %}<span class="label label-danger">
-                                        {% endif %}{{ item.status.value }}{% if item.submitted %}(于{{ item.sub_time
-                                        }},
-                                        {{ item.sub_size.human_readable() }}){% endif %}</span></td>
+                        <td>{% if item.status.value == '已锁定' %}<span class="badge rounded-pill bg-success">
+                                {% endif %}{% if item.status.value == '已提交' %}<span
+                                    class="badge rounded-pill bg-info text-dark">
+                                    {% endif %}{% if item.status.value == '未提交' %}<span
+                                        class="badge rounded-pill bg-danger">
+                                        {% endif %}{{ item.status.value }}
+                                        {% if item.submitted %}</span>
+                                    <span class="badge bg-warning text-dark">{{ item.sub_size.human_readable()
+                                        }}</span><br>
+                                    <span class="badge bg-secondary">{{ item.sub_time }}</span>
+                                    {% endif %}</td>
                         <td>{{ item.mission.deadline }}</td>
                         <td>{{ item.remain }}</td>
                         <td><a href="/submit/{{ item.mission.mission_url }}">
@@ -106,7 +100,7 @@
                 </tbody>
             </table>
         </div>
-    </main>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>

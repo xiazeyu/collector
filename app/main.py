@@ -231,11 +231,14 @@ async def submit_detailed(request: Request,
                                          mission=store.missions[mission_url],
                                          stu_count=len(store.students)).fetch()
 
+    check_result = await check(mission_status)
+
     response = templates.TemplateResponse(
         "submit.html", {'request': request,
                         'info': decode_cookies(info),
                         'now': datetime.today(),
-                        'mission_status': mission_status})
+                        'mission_status': mission_status,
+                        'check_result': check_result})
     if info:
         response.delete_cookie(key='info')
     return response
@@ -356,32 +359,19 @@ async def lock(mission_url: str,
     return response
 
 
-@app.get('/check/{mission_url}', response_class=HTMLResponse)
-async def check(mission_url: str,
-                stu_id: Optional[str] = Depends(get_stu_id),
-                invalid: Optional[HTMLResponse] = Depends(
-                    invalid_response)) -> HTMLResponse:
+async def check(mission_status: MissionStatus) -> str:
     """
-    Display check of the uploaded file.
+    Return the check of the file.
 
     Args:
-        mission_url: the url-name of the mission
-        stu_id: provided student id
-        invalid: response when session is invalid
+        path: target file path
+        mission_status: mission status
 
     Returns:
-        HTMLResponse: the response body
+        str: check result in HTML
     """
-    if invalid:
-        return invalid
-    stu_obj = get_stu_obj(stu_id)
 
-    mission_status = await MissionStatus(student=stu_obj,
-                                         mission=store.missions[mission_url],
-                                         stu_count=len(store.students)).fetch()
-
+    mission_url = mission_status.mission.mission_url
     if mission_status.submitted and mission_url in store.checkers:
-        response = HTMLResponse(
-            content=store.checkers[mission_url](mission_status.sub_file_path))
-        return response
+        return store.checkers[mission_url](mission_status.sub_file_path)
     return None

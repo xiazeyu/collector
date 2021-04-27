@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from datetime import datetime, timedelta
 from enum import Enum
-from importlib import import_module
+from importlib import import_module, invalidate_caches
 from pathlib import Path
 from typing import Any, Dict, Optional, ForwardRef
 import json
@@ -139,6 +139,7 @@ class Store(BaseModel):
                 pass
         for checker in list(config.missions_path.glob('**/*.py')):
             try:
+                invalidate_caches()
                 self.checkers[checker.stem] = import_module(
                     f'{config.import_root}{checker.stem}').main
             except:  # pylint: disable=bare-except
