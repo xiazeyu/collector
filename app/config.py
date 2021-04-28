@@ -1,7 +1,7 @@
 from pathlib import Path
 import logging
 
-logging.basicConfig(encoding='utf-8', level=logging.DEBUG)
+#logging.basicConfig(encoding='utf-8', level=logging.DEBUG)
 
 
 ROOT_PATH: Path = Path.cwd()
