@@ -1,5 +1,4 @@
 aiofiles
-async-property
 jinja2
 python-multipart
 watchdog

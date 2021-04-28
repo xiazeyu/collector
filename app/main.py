@@ -1,13 +1,12 @@
 from datetime import datetime
 from typing import Optional
-import logging
 
 from fastapi import Cookie, Depends, FastAPI, Request, File, UploadFile, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from store import Store, Student, MissionStatus, StatusEnum
 import config
+from store import Store, Student, MissionStatus, StatusEnum
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -56,7 +55,8 @@ def get_stu_id(stu_id: Optional[str] = None,
     Returns:
         Optional[str]: student id
     """
-    logging.debug({'stu_id': stu_id, 'stu_id_cookie': stu_id_cookie})
+    if config.DEBUG_FLAG:
+        print({'stu_id': stu_id, 'stu_id_cookie': stu_id_cookie})
     return stu_id_cookie or stu_id
 
 
@@ -71,7 +71,8 @@ def check_stu_id(stu_id: Optional[str] = Depends(get_stu_id)) -> bool:
         bool: if student id is valid
     """
     result = stu_id in store.students
-    logging.debug({'stu_id': stu_id, 'check_stu_id': result})
+    if config.DEBUG_FLAG:
+        print({'stu_id': stu_id, 'check_stu_id': result})
     return result
 
 
@@ -105,7 +106,8 @@ def get_stu_obj(stu_id: Optional[str] = Depends(get_stu_id)) -> Student:
         Student: student obj
     """
     stu_obj = Student(stu_id=stu_id, name=store.students[stu_id])
-    logging.debug({'stu_obj': stu_obj})
+    if config.DEBUG_FLAG:
+        print({'stu_obj': stu_obj})
     return stu_obj
 
 
@@ -185,13 +187,14 @@ async def submit_list(request: Request,
     missions_status = []
     submitted = 0
     for key in sorted(store.missions.keys()):
-        mission_status = await MissionStatus(student=stu_obj,
-                                             mission=store.missions[key])
-        await mission_status.get_finish_rate(len(store.students))
-        missions_status.append(mission_status)
-        if (await mission_status.file_info).submitted:
+        mission_status = MissionStatus(student=stu_obj,
+                                       mission=store.missions[key],
+                                       stu_count=len(store.students))
+        missions_status.append(await mission_status.fetch())
+        if mission_status.submitted:
             submitted += 1
-        logging.debug(missions_status)
+    if config.DEBUG_FLAG:
+        print(missions_status)
     return templates.TemplateResponse(
         'missions.html', {'request': request,
                           'student': stu_obj,
@@ -225,11 +228,10 @@ async def submit_detailed(request: Request,
     stu_obj = get_stu_obj(stu_id)
 
     mission_status = await MissionStatus(student=stu_obj,
-                                         mission=store.missions[mission_url])
+                                         mission=store.missions[mission_url],
+                                         stu_count=len(store.students)).fetch()
 
-    check_result = None
-    if mission_status.file_info.submitted and mission_url in store.checkers:
-        check_result = store.checkers[mission_url](mission_status.file_info.sub_file_path)
+    check_result = await check(mission_status)
 
     response = templates.TemplateResponse(
         "submit.html", {'request': request,
@@ -281,7 +283,8 @@ async def submit_handler(mission_url: str,
     stu_obj = get_stu_obj(stu_id)
 
     mission_status = await MissionStatus(student=stu_obj,
-                                         mission=store.missions[mission_url])
+                                         mission=store.missions[mission_url],
+                                         stu_count=len(store.students)).fetch()
     ext = mission_status.mission.ext
 
     response = RedirectResponse(
@@ -299,8 +302,7 @@ async def submit_handler(mission_url: str,
 
     try:
         mission_path = config.received_path / mission_status.mission.subpath
-        ucfp = mission_path / \
-            f'{stu_obj.stu_id}-{stu_obj.name}.unconfirmed.{ext}'
+        ucfp = mission_path / f'{stu_obj.stu_id}-{stu_obj.name}.unconfirmed.{ext}'
 
         up_stream = await file.read(mission_status.mission.size)
         with open(ucfp, "wb") as target:
@@ -338,7 +340,8 @@ async def lock(mission_url: str,
     stu_obj = get_stu_obj(stu_id)
 
     mission_status = await MissionStatus(student=stu_obj,
-                                         mission=store.missions[mission_url])
+                                         mission=store.missions[mission_url],
+                                         stu_count=len(store.students)).fetch()
     ext = mission_status.mission.ext
 
     response = RedirectResponse(
@@ -346,8 +349,7 @@ async def lock(mission_url: str,
 
     if mission_status.status == StatusEnum.UPLOADED:
         mission_path = config.received_path / mission_status.mission.subpath
-        ucfp = mission_path / \
-            f'{stu_obj.stu_id}-{stu_obj.name}.unconfirmed.{ext}'
+        ucfp = mission_path / f'{stu_obj.stu_id}-{stu_obj.name}.unconfirmed.{ext}'
         ccfp = mission_path / f'{stu_obj.stu_id}-{stu_obj.name}.{ext}'
         if ucfp.exists():
             ucfp.rename(mission_path / ccfp)
@@ -355,3 +357,21 @@ async def lock(mission_url: str,
             key='info', value=encode_cookies('锁定成功。'))
 
     return response
+
+
+async def check(mission_status: MissionStatus) -> str:
+    """
+    Return the check of the file.
+
+    Args:
+        path: target file path
+        mission_status: mission status
+
+    Returns:
+        str: check result in HTML
+    """
+
+    mission_url = mission_status.mission.mission_url
+    if mission_status.submitted and mission_url in store.checkers:
+        return store.checkers[mission_url](mission_status.sub_file_path)
+    return None

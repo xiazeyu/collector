@@ -71,22 +71,22 @@
                     </tr>
                 </thead>
                 <tbody>{% for item in missions_status %}
-                    {% if item.file_info.status.value == '已锁定' %}
+                    {% if item.status.value == '已锁定' %}
                     <tr class="table-success">
-                        {% endif %}{% if item.file_info.status.value == '未提交' %}
+                        {% endif %}{% if item.status.value == '未提交' %}
                     <tr>
                         {% endif %}
                         <td scope="row">{{ item.mission.name }}</td>
-                        <td>{% if item.file_info.status.value == '已锁定' %}<span class="badge rounded-pill bg-success">
-                                {% endif %}{% if item.file_info.status.value == '已提交' %}<span
+                        <td>{% if item.status.value == '已锁定' %}<span class="badge rounded-pill bg-success">
+                                {% endif %}{% if item.status.value == '已提交' %}<span
                                     class="badge rounded-pill bg-info text-dark">
-                                    {% endif %}{% if item.file_info.status.value == '未提交' %}<span
+                                    {% endif %}{% if item.status.value == '未提交' %}<span
                                         class="badge rounded-pill bg-danger">
-                                        {% endif %}{{ item.file_info.status.value }}
-                                        {% if item.file_info.submitted %}</span>
-                                    <span class="badge bg-warning text-dark">{{ item.file_info.sub_size.human_readable()
+                                        {% endif %}{{ item.status.value }}
+                                        {% if item.submitted %}</span>
+                                    <span class="badge bg-warning text-dark">{{ item.sub_size.human_readable()
                                         }}</span><br>
-                                    <span class="badge bg-secondary">{{ item.file_info.sub_time }}</span>
+                                    <span class="badge bg-secondary">{{ item.sub_time }}</span>
                                     {% endif %}</td>
                         <td>{{ item.mission.deadline }}</td>
                         <td>{{ item.remain }}</td>
