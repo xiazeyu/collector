@@ -1,7 +1,14 @@
+[![GitHub license](https://img.shields.io/github/license/xiazeyu/collector)](https://github.com/xiazeyu/collector/blob/main/LICENSE) [![GitHub stars](https://img.shields.io/github/stars/xiazeyu/collector)](https://github.com/xiazeyu/collector/stargazers)
+
+![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/xiazeyu2011/collector)![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/xiazeyu2011/collector)![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/xiazeyu2011/collector)
+
+![GitHub top language](https://img.shields.io/github/languages/top/xiazeyu/collector)![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/xiazeyu/collector)
+
 # collector
+
 Collect files and rename it using python
 
-extremely lightweight. no js, each HTML files < 2KB.
+lightweight. easy to use.
 
 ### Usage
 
