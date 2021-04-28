@@ -1,7 +1,6 @@
 from pathlib import Path
-import logging
 
-logging.basicConfig(encoding='utf-8', level=logging.DEBUG)
+DEBUG_FLAG: bool = False
 
 
 ROOT_PATH: Path = Path.cwd()
@@ -10,7 +9,7 @@ RECEIVED_SUBPATH: str = 'received'
 STUDENTS_SUBPATH: str = 'students.json'
 MISSION_SUBPATH: str = 'missions'
 
-DATETIME_FORMAT: str = '%a %Y-%m-%d %H:%M:%S'
+DATETIME_FORMAT = '%a %Y-%m-%d %H:%M:%S'
 
 # Below are auto-computed
 # You should not change
