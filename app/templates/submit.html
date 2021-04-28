@@ -86,6 +86,13 @@
 
         <div class="b-divider"></div>
 
+        {% if mission_status.submitted and check_result %}
+        <div class="p-5 bg-light rounded-3 table-responsive text-nowrap" style="height: 840px;overflow: auto;">
+            {{ check_result | safe }}
+        </div>
+        <div class="b-divider"></div>
+        {% endif %}
+
         {% if mission_status.mission.description %}
         <div class="p-5 bg-light rounded-3">
             <div class="container-fluid py-5">
@@ -162,13 +169,6 @@
                 <p><strong>警告: 锁定文件意味着，最后一次提交会成为最终版本。</strong></p>
                 <p>逾期后未锁定的文件将自动锁定确认。</p>
             </div>
-        </div>
-        {% endif %}
-
-        {% if mission_status.submitted and check_result %}
-        <div class="b-divider"></div>
-        <div class="p-5 bg-light rounded-3 table-responsive text-nowrap">
-            {{ check_result | safe }}
         </div>
         {% endif %}
 
