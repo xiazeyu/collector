@@ -2,11 +2,12 @@ from collections.abc import Callable
 from datetime import datetime, timedelta
 from enum import Enum
 from importlib import import_module, invalidate_caches
+import logging
 from pathlib import Path
 from typing import Any, Dict, Optional, ForwardRef
 import json
 from pydantic import BaseModel, ByteSize
-from watchdog.events import FileSystemEventHandler
+from watchdog.events import FileSystemEventHandler, EVENT_TYPE_CREATED
 from watchdog.observers import Observer
 import config
 
@@ -114,7 +115,7 @@ class Store(BaseModel):
                            checkers={},
                            observer=Observer())
         self.read_data()
-        self.__start_observe()
+        self.__start_observer()
 
     def read_data(self):
         """
@@ -126,24 +127,42 @@ class Store(BaseModel):
         Returns:
             (NULL)
         """
-        if config.DEBUG_FLAG:
-            print("READ_DATA")
+        logging.debug("READ_DATA")
+        self.read_students()
+        self.read_missions()
+        self.read_checkers()
+
+    def read_students(self):
+        """
+        Read students data from local storage.
+
+        Args:
+            self: the instance
+
+        Returns:
+            (NULL)
+        """
+        logging.debug("READ_STU_DATA")
         self.students = {}
-        self.missions = {}
-        self.checkers = {}
         if config.students_path.exists():
             try:
                 self.students = json.loads(
                     config.students_path.read_text(encoding='UTF-8'))
             except:  # pylint: disable=bare-except
                 pass
-        for checker in list(config.missions_path.glob('**/*.py')):
-            try:
-                invalidate_caches()
-                self.checkers[checker.stem] = import_module(
-                    f'{config.import_root}{checker.stem}').main
-            except:  # pylint: disable=bare-except
-                pass
+
+    def read_missions(self):
+        """
+        Read missions data from local storage.
+
+        Args:
+            self: the instance
+
+        Returns:
+            (NULL)
+        """
+        logging.debug("READ_MIS_DATA")
+        self.missions = {}
         for mission in list(config.missions_path.glob('**/*.json')):
             try:
                 self.missions[mission.stem] = Mission(
@@ -152,7 +171,27 @@ class Store(BaseModel):
             except:  # pylint: disable=bare-except
                 pass
 
-    def __start_observe(self):
+    def read_checkers(self):
+        """
+        Read chckers data from local storage.
+
+        Args:
+            self: the instance
+
+        Returns:
+            (NULL)
+        """
+        logging.debug("READ_CHK_DATA")
+        self.checkers = {}
+        for checker in list(config.missions_path.glob('**/*.py')):
+            try:
+                invalidate_caches()
+                self.checkers[checker.stem] = import_module(
+                    f'{config.import_root}{checker.stem}').main
+            except:  # pylint: disable=bare-except
+                pass
+
+    def __start_observer(self):
         """
         Start observation of students, missions and checkers.
 
@@ -164,9 +203,33 @@ class Store(BaseModel):
         """
 
         event_handler = FileSystemEventHandler()
-        event_handler.on_any_event = lambda _: self.read_data()
+        def dispatch(event):
+            """Dispatches events to the appropriate methods.
+
+            :param event:
+                The event object representing the file system event.
+            :type event:
+                :class:`FileSystemEvent`
+            """
+            if event.is_directory:
+                return
+
+            if event.event_type == EVENT_TYPE_CREATED:
+                return
+
+            path = Path(event.src_path)
+            logging.debug('%s:%s', event.event_type, event.src_path)
+            if(path.name == config.STUDENTS_SUBPATH):
+                self.read_students()
+            elif(path.suffix == '.json'):
+                self.read_missions()
+            elif(path.suffix == '.py'):
+                self.read_checkers()
+
+        event_handler.dispatch = dispatch
+
         self.observer.schedule(
-            event_handler, config.db_path.as_posix(), recursive=True)
+            event_handler, config.db_path, recursive=True)
         self.observer.start()
 
 
