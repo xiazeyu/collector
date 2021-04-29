@@ -344,7 +344,7 @@ async def lock(mission_url: str,
     response = RedirectResponse(
         url=f'/submit/{mission_url}', status_code=status.HTTP_303_SEE_OTHER)
 
-    if mission_status.status == StatusEnum.UPLOADED:
+    if mission_status.file_info.status == StatusEnum.UPLOADED:
         mission_path = config.received_path / mission_status.mission.subpath
         ucfp = mission_path / \
             f'{stu_obj.stu_id}-{stu_obj.name}.unconfirmed.{ext}'
