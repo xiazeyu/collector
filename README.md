@@ -15,6 +15,7 @@ lightweight. easy to use.
 ```bash
 docker run --detach \
   --name collector \
+  --env "PRODUCTION=1" \
   --env "VIRTUAL_HOST=collector.domain.com" \
   --env "LETSENCRYPT_HOST=collector.domain.com" \
   --volume /collector/db:/app/db \

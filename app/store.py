@@ -14,6 +14,7 @@ from watchdog.observers import Observer
 
 import config
 
+logger = logging.getLogger(__name__)
 
 class StatusEnum(str, Enum):
     """
@@ -244,7 +245,7 @@ class Store(BaseModel):
         Returns:
             None
         """
-        logging.debug("READ_DATA")
+        logger.info("READ_DATA")
         self.read_students()
         self.read_missions()
         self.read_checkers()
@@ -259,14 +260,14 @@ class Store(BaseModel):
         Returns:
             None
         """
-        logging.debug("READ_STU_DATA")
+        logger.info("READ_STU_DATA")
         self.students = {}
         if config.students_path.exists():
             try:
                 self.students = json.loads(
                     config.students_path.read_text(encoding='UTF-8'))
-            except:  # pylint: disable=bare-except
-                pass
+            except Exception as exception:  # pylint: disable=broad-except
+                logger.warning('config invalid: %s', exception.args[0])
 
     def read_missions(self) -> None:
         """
@@ -278,15 +279,15 @@ class Store(BaseModel):
         Returns:
             None
         """
-        logging.debug("READ_MIS_DATA")
+        logger.info("READ_MIS_DATA")
         self.missions = {}
         for mission in list(config.missions_path.glob('**/*.json')):
             try:
                 self.missions[mission.stem] = Mission(
                     mission_url=mission.stem,
                     **json.loads(mission.read_text(encoding='UTF-8')))
-            except:  # pylint: disable=bare-except
-                pass
+            except Exception as exception:  # pylint: disable=broad-except
+                logger.warning('config invalid: %s', exception.args[0])
 
     def read_checkers(self) -> None:
         """
@@ -298,15 +299,15 @@ class Store(BaseModel):
         Returns:
             None
         """
-        logging.debug("READ_CHK_DATA")
+        logger.info("READ_CHK_DATA")
         self.checkers = {}
         for checker in list(config.missions_path.glob('**/*.py')):
             try:
                 invalidate_caches()
                 self.checkers[checker.stem] = import_module(
                     f'{config.import_root}{checker.stem}').main
-            except:  # pylint: disable=bare-except
-                pass
+            except Exception as exception:  # pylint: disable=broad-except
+                logger.warning('config invalid: %s', exception.args[0])
 
     def __start_observer(self) -> None:
         """
@@ -338,7 +339,7 @@ class Store(BaseModel):
                 return
 
             path = Path(event.src_path)
-            logging.debug('%s:%s', event.event_type, event.src_path)
+            logger.debug('%s:%s', event.event_type, event.src_path)
             if path.name == config.STUDENTS_SUBPATH:
                 self.read_students()
             elif path.suffix == '.json':
