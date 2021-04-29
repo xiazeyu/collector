@@ -56,8 +56,8 @@ def test_zip(obj: zipfile.ZipFile) -> (str, bool):
         return f'<h2>出现问题: {exception.args[0]}</h2>', False
 
     if result:
-        return '<h2>压缩包已损坏，请重新打包上传。</h2>', True
-    return '<h2>压缩包文件完好。</h2>', False
+        return '<h2>压缩包已损坏，请重新打包上传。</h2>', False
+    return '<h2>压缩包文件完好。</h2>', True
 
 
 def list_zip(obj) -> str:
