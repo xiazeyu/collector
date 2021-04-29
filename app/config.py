@@ -17,7 +17,7 @@ LOG_LEVEL = logging.DEBUG
 if os.getenv('PRODUCTION') == 1:
     LOG_LEVEL = logging.WARNING
 
-logging.basicConfig(encoding='utf-8', level=LOG_LEVEL)
+logging.basicConfig(level=LOG_LEVEL)
 
 db_path: Path = ROOT_PATH / DP_SUBPATH
 received_path: Path = ROOT_PATH / RECEIVED_SUBPATH
