@@ -1,8 +1,6 @@
 from pathlib import Path
 import logging
-
-#logging.basicConfig(encoding='utf-8', level=logging.DEBUG)
-
+import os
 
 ROOT_PATH: Path = Path.cwd()
 DP_SUBPATH: str = 'db'
@@ -14,6 +12,12 @@ DATETIME_FORMAT: str = '%a %Y-%m-%d %H:%M:%S'
 
 # Below are auto-computed
 # You should not change
+
+LOG_LEVEL = logging.DEBUG
+if os.getenv('PRODUCTION') == 1:
+    LOG_LEVEL = logging.WARNING
+
+logging.basicConfig(level=LOG_LEVEL)
 
 db_path: Path = ROOT_PATH / DP_SUBPATH
 received_path: Path = ROOT_PATH / RECEIVED_SUBPATH

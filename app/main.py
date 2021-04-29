@@ -15,6 +15,7 @@ templates = Jinja2Templates(directory='templates')
 
 store = Store()
 
+logger = logging.getLogger(__name__)
 
 def encode_cookies(string_to_encode: str) -> str:
     """
@@ -56,7 +57,7 @@ def get_stu_id(stu_id: Optional[str] = None,
     Returns:
         Optional[str]: student id
     """
-    logging.debug({'stu_id': stu_id, 'stu_id_cookie': stu_id_cookie})
+    logger.debug({'stu_id': stu_id, 'stu_id_cookie': stu_id_cookie})
     return stu_id_cookie or stu_id
 
 
@@ -71,7 +72,7 @@ def check_stu_id(stu_id: Optional[str] = Depends(get_stu_id)) -> bool:
         bool: if student id is valid
     """
     result = stu_id in store.students
-    logging.debug({'stu_id': stu_id, 'check_stu_id': result})
+    logger.debug({'stu_id': stu_id, 'check_stu_id': result})
     return result
 
 
@@ -105,7 +106,7 @@ def get_stu_obj(stu_id: Optional[str] = Depends(get_stu_id)) -> Student:
         Student: student obj
     """
     stu_obj = Student(stu_id=stu_id, name=store.students[stu_id])
-    logging.debug({'stu_obj': stu_obj})
+    logger.debug({'stu_obj': stu_obj})
     return stu_obj
 
 
@@ -191,7 +192,7 @@ async def submit_list(request: Request,
         missions_status.append(mission_status)
         if (await mission_status.file_info).submitted:
             submitted += 1
-        logging.debug(missions_status)
+        logger.debug(missions_status)
     return templates.TemplateResponse(
         'missions.html', {'request': request,
                           'student': stu_obj,
@@ -306,9 +307,10 @@ async def submit_handler(mission_url: str,
         with open(ucfp, "wb") as target:
             target.write(up_stream)
         target.close()
-    except:  # pylint: disable=bare-except
+    except Exception as exception:  # pylint: disable=broad-except
         response.set_cookie(
-            key='info', value=encode_cookies('上传失败，请联系管理员。'))
+            key='info', value=encode_cookies(f'上传失败，请联系管理员。{exception.args[0]}'))
+        logger.exception('upload failed: %s', exception.args[0])
         return response
 
     response.set_cookie(
@@ -344,7 +346,7 @@ async def lock(mission_url: str,
     response = RedirectResponse(
         url=f'/submit/{mission_url}', status_code=status.HTTP_303_SEE_OTHER)
 
-    if mission_status.status == StatusEnum.UPLOADED:
+    if mission_status.file_info.status == StatusEnum.UPLOADED:
         mission_path = config.received_path / mission_status.mission.subpath
         ucfp = mission_path / \
             f'{stu_obj.stu_id}-{stu_obj.name}.unconfirmed.{ext}'
