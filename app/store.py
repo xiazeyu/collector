@@ -87,9 +87,9 @@ class UserFileInfo(AwaitLoader):
         mission_path = config.received_path / mis.subpath
         mission_path.mkdir(parents=True, exist_ok=True)
         unconfirmed_filepath = mission_path / \
-            f'{stu.stu_id}-{stu.name}.unconfirmed.{mis.ext}'
+            config.get_file_name(stu, mis.ext, False)
         confirmed_filepath = mission_path / \
-            f'{stu.stu_id}-{stu.name}.{mis.ext}'
+            config.get_file_name(stu, mis.ext)
 
         if confirmed_filepath.exists():
             self.status = StatusEnum.LOCKED

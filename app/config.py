@@ -2,6 +2,8 @@ from pathlib import Path
 import logging
 import os
 
+from store import Student
+
 ROOT_PATH: Path = Path.cwd()
 DP_SUBPATH: str = 'db'
 RECEIVED_SUBPATH: str = 'received'
@@ -25,3 +27,21 @@ students_path: Path = db_path / STUDENTS_SUBPATH
 missions_path: Path = db_path / MISSION_SUBPATH
 
 import_root: str = f'{DP_SUBPATH}.{MISSION_SUBPATH}.'
+
+
+def get_file_name(stu: Student, ext: str, confirmed: bool = True) -> str:
+    """
+    Get the filename.
+
+    Args:
+        stu: student object
+        ext: file ext name
+        confirmed: if is confirmed file
+
+    Returns:
+        str: the file name
+    """
+    if confirmed:
+        return f'{stu.stu_id}-{stu.name}.{ext}'
+    else:
+        return f'{stu.stu_id}-{stu.name}.unconfirmed.{ext}'
