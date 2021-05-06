@@ -2,8 +2,6 @@ from pathlib import Path
 import logging
 import os
 
-from store import Student
-
 ROOT_PATH: Path = Path.cwd()
 DP_SUBPATH: str = 'db'
 RECEIVED_SUBPATH: str = 'received'
@@ -29,7 +27,7 @@ missions_path: Path = db_path / MISSION_SUBPATH
 import_root: str = f'{DP_SUBPATH}.{MISSION_SUBPATH}.'
 
 
-def get_file_name(stu: Student, ext: str, confirmed: bool = True) -> str:
+def get_file_name(stu, ext: str, confirmed: bool = True) -> str:
     """
     Get the filename.
 
