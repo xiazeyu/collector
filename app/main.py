@@ -300,8 +300,7 @@ async def submit_handler(mission_url: str,
 
     try:
         mission_path = config.received_path / mission_status.mission.subpath
-        ucfp = mission_path / \
-            f'{stu_obj.stu_id}-{stu_obj.name}.unconfirmed.{ext}'
+        ucfp = mission_path / config.get_file_name(stu_obj, ext, False)
 
         up_stream = await file.read(mission_status.mission.size)
         with open(ucfp, "wb") as target:
@@ -348,9 +347,8 @@ async def lock(mission_url: str,
 
     if mission_status.file_info.status == StatusEnum.UPLOADED:
         mission_path = config.received_path / mission_status.mission.subpath
-        ucfp = mission_path / \
-            f'{stu_obj.stu_id}-{stu_obj.name}.unconfirmed.{ext}'
-        ccfp = mission_path / f'{stu_obj.stu_id}-{stu_obj.name}.{ext}'
+        ucfp = mission_path / config.get_file_name(stu_obj, ext, False)
+        ccfp = mission_path / config.get_file_name(stu_obj, ext)
         if ucfp.exists():
             ucfp.rename(mission_path / ccfp)
         response.set_cookie(
