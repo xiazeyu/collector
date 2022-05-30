@@ -6,3 +6,4 @@ async-property
 jinja2
 python-multipart
 watchdog
+starlette==0.20.1
