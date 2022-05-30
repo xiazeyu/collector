@@ -13,6 +13,7 @@ lightweight. easy to use.
 ### Usage
 
 ```bash
+docker pull xiazeyu2011/collector
 docker run --detach \
   --name collector \
   --env "PRODUCTION=1" \
@@ -22,7 +23,7 @@ docker run --detach \
   --volume /collector/received:/app/received \
   --volume /etc/localtime:/etc/localtime:ro \
   --restart=always \
-  ghcr.io/xiazeyu/collector:main
+  xiazeyu2011/collector
 ```
 
 ## Online update
