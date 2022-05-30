@@ -1,7 +1,7 @@
 FROM python:latest
 
 COPY ./app/requirements.txt /tmp/requirements.txt
-RUN pip install --no-cache-dir -r /tmp/requirements.txt
+RUN pip install --no-cache-dir --no-deps -r /tmp/requirements.txt
 
 COPY ./start.sh /start.sh
 RUN chmod +x /start.sh
