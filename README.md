@@ -22,7 +22,7 @@ docker run --detach \
   --volume /collector/received:/app/received \
   --volume /etc/localtime:/etc/localtime:ro \
   --restart=always \
-  xiazeyu2011/collector
+  ghcr.io/xiazeyu/collector:main
 ```
 
 ## Online update
