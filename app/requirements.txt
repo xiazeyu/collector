@@ -1,5 +1,5 @@
 aiofiles
 async-property
-jinja2==3.1.2
+jinja2
 python-multipart
 watchdog
